@@ -2,10 +2,10 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import hikeRoutes from './routes/hike.js';
+import pgclient from './db.js';
 
 
 const app = express();
-
 
 dotenv.config();
 
@@ -35,6 +35,12 @@ app.use((req, res)=>{
     res.json({message: "route not found"});
 })
 
-app.listen(PORT, ()=>{
-    console.log(`Lestining on port ${PORT}`);
-})
+pgclient.connect()
+    .then (()=>{
+        app.listen(PORT, ()=>{
+            console.log(`Lestining on port ${PORT}`);
+        })
+}).catch((error=> {
+    console.log('error connecting to the DB');
+    console.log(error);
+}))
