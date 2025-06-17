@@ -1,0 +1,40 @@
+import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import hikeRoutes from './routes/hike.js';
+
+
+const app = express();
+
+
+dotenv.config();
+
+//MiddleWares
+app.use(cors());
+app.use(express.json());
+
+
+const PORT = process.env.PORT || 3002;
+
+
+//Routes
+
+app.use('/api/hikes', hikeRoutes);
+
+
+//localhost:3001/test
+app.get("/test", (req,res)=>{
+    res.send("tesst route");
+})
+
+
+
+
+
+app.use((req, res)=>{
+    res.json({message: "route not found"});
+})
+
+app.listen(PORT, ()=>{
+    console.log(`Lestining on port ${PORT}`);
+})
