@@ -7,22 +7,40 @@ const reservationRoutes = express.Router();
 
 //reserve a hike
 //localhost:3001/api/reservations
-reservationRoutes.post('/', (req,res)=>{
-    const {user_id, schedule_id} = req.body;
+reservationRoutes.post('/', async (req, res) => {
+  const { user_id, schedule_id } = req.body;
 
-    if(!user_id || !schedule_id)
-        return res.status(400).json({message: "Missing user_id or schedule_id"});
+  if (!user_id || !schedule_id) {
+    return res.status(400).json({ message: "Missing user_id or schedule_id" });
+  }
 
+  try {
+    // Check for existing reservation
+    const existing = await db.query(
+      `SELECT * FROM reservations WHERE user_id = $1 AND schedule_id = $2`,
+      [user_id, schedule_id]
+    );
 
-    db.query(`
-        INSERT INTO reservations (user_id, schedule_id) VALUES ($1,$2) RETURNING *`,
-    [user_id, schedule_id])
-        .then((result)=>res.status(201).json({reservation: result.rows[0]}))
-        .catch(error => {
-      console.error(error);
-      res.status(500).json({ message: "Reservation failed" });
-    });
-})
+    if (existing.rows.length > 0) {
+      return res.status(409).json({ message: "You already reserved this hike." });
+    }
+
+    // Insert reservation
+    const result = await db.query(
+      `INSERT INTO reservations (user_id, schedule_id) VALUES ($1, $2) RETURNING *`,
+      [user_id, schedule_id]
+    );
+
+    res.status(201).json({ reservation: result.rows[0] });
+  } catch (error) {
+    console.error(error);
+    // Handle unique constraint error gracefully
+    if (error.code === '23505') {
+      return res.status(409).json({ message: "You already reserved this hike." });
+    }
+    res.status(500).json({ message: "Reservation failed" });
+  }
+});
 
 //get user's reservations by userid
 //localhost:3001/api/reservations/2
