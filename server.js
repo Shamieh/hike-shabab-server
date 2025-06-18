@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import hikeRoutes from './routes/hikes.js';
 import pgclient from './db.js';
+import authRoutes from './routes/auth.js';
 
 
 const app = express();
@@ -20,6 +21,8 @@ const PORT = process.env.PORT || 3002;
 //Routes
 
 app.use('/api/hikes', hikeRoutes);
+app.use('/api/auth', authRoutes);
+
 
 
 //localhost:3001/test
