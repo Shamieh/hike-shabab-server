@@ -4,6 +4,7 @@ import cors from 'cors';
 import hikeRoutes from './routes/hikes.js';
 import pgclient from './db.js';
 import authRoutes from './routes/auth.js';
+import adminRoutes from './routes/admin.js';
 import reservationRoutes from './routes/reservation.js';
 
 
@@ -24,6 +25,7 @@ const PORT = process.env.PORT || 3002;
 app.use('/api/hikes', hikeRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/reservations', reservationRoutes);
+app.use('/api/admin', adminRoutes);
 
 
 
