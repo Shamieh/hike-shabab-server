@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import hikeRoutes from './routes/hike.js';
+import hikeRoutes from './routes/hikes.js';
 import pgclient from './db.js';
 
 
