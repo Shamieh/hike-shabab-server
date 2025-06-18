@@ -59,13 +59,18 @@ reservationRoutes.get('/:id',(req, res)=>{
 
 //get user's reservations
 //localhost:3001/api/reservations/delete/2
-reservationRoutes.delete('/delete/:id',(req, res)=>{
-    const reservationId = req.params.id;
-
-    db.query(`DELETE FROM reservations r WHERE $1 = r.id RETURNING *`,
-        [reservationId])
-        .catch((error)=> res.status(500).json({message:"Failed to delete reservations"}));
-        }
-    )
+reservationRoutes.delete('/delete/:id', async (req, res) => {
+  const reservationId = req.params.id;
+  try {
+    const result = await db.query(
+      `DELETE FROM reservations WHERE id = $1 RETURNING *`,
+      [reservationId]
+    );
+    res.status(200).json({ message: "Reservation deleted" }); // ✅ Add this
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to delete reservation" });
+  }
+});
 
 export default reservationRoutes;
